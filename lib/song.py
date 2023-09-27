@@ -20,7 +20,8 @@ class Song:
             )
         """
 
-        CURSOR.execute(sql)
+        with sqlite3.connect('music.db') as conn:
+            conn.execute(sql)
       
 
     def save(self):
@@ -29,22 +30,17 @@ class Song:
             VALUES (?, ?)
         """
 
-        CURSOR.execute(sql, (self.name, self.album))
-        self.id = CURSOR.execute("SELECT last_insert_rowid() FROM songs").fetchone()[0]
+        with sqlite3.connect('music.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute(sql, (self.name, self.album))
+            self.id = cursor.lastrowid
   
-
-    # @classmethod
-    # def delete_table(self):
-    #     sql=""" 
-    #     DROP TABLE IF EXISTS songs
-    #     """
-    #     CURSOR.execute(sql)
-
     @classmethod
     def create(cls, name, album):
         song = Song(name, album)
         song.save()
         return song
 
-#Song.create('Hello','25')
-#CONNECT.commit()
+
+Song.create('Hello','25')
+CONNECT.commit()
